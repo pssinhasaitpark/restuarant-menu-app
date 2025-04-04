@@ -1,0 +1,11 @@
+.main-gallery-slider {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  @media (max-width: 768px) {
+    .main-gallery-slider img {
+      height: 40vh; /* Adjust for smaller screens */
+    }
+  }
+  

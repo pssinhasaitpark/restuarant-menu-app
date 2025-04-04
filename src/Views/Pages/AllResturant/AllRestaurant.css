@@ -1,0 +1,24 @@
+  .restaurant-card {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+  }
+  .restaurant-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  }
+  .restaurant-image {
+    height: 180px;
+    object-fit: cover;
+  }
+  .favorite-btn {
+    width: 35px;
+    height: 35px;
+  }
+  @media (max-width: 768px) {
+    .restaurant-image {
+      height: 160px;
+    }
+  }
+  .btn-outline-success:hover {
+    background-color: #0e3115de; 
+  }
