@@ -1,0 +1,26 @@
+.heading-top::before {
+    content: '';
+    position: absolute;
+    top: 5%;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("../../../assets/images/banner2.webp");
+    background-size: auto;
+    background-position: center;
+    opacity: 0.3;
+    z-index: 1;
+    background-repeat: repeat-y;
+}
+
+.color-column {
+    background-color: rgb(221 221 223 / 25%);
+    backdrop-filter: blur(10px);
+}
+.heading-top {
+    position: relative;
+    height: auto;
+    padding-bottom: 20px; 
+  }
+  
+ 
