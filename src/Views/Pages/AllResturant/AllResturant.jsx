@@ -8,6 +8,7 @@ import {
   Badge,
   Form,
   Spinner,
+  InputGroup,
 } from "react-bootstrap";
 import {
   FaRegHeart,
@@ -16,26 +17,38 @@ import {
   FaDrumstickBite,
   FaStar,
   FaFilter,
+  FaSearch,
 } from "react-icons/fa";
 import { BsGeoAlt, BsClock } from "react-icons/bs";
 import { AiOutlineGlobal } from "react-icons/ai";
 import { FaArrowRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { useRestaurants } from "../../hooks/index";
+import { useRestaurants, useWhislists } from "../../hooks/index";
 import "./AllRestaurant.css";
 import { FaArrowUp } from "react-icons/fa6";
-const RestaurantList = ({ selectedLocation }) => {
+const AllRestaurant = ({ selectedLocation }) => {
   const { data: restaurants, isLoading } = useRestaurants();
+  const { wishlistData, mutate: wishlistMutate } = useWhislists();
   const [visibleCount, setVisibleCount] = useState(6);
   const [showButton, setShowButton] = useState(false);
   const [filter, setFilter] = useState("all");
-  const [favorites, setFavorites] = useState([]);
+  const [favorites, setFavorites] = useState({});
   const [showFilters, setShowFilters] = useState(true);
-
+  const [nameSearch, setNameSearch] = useState("");
+  const [locationSearch, setLocationSearch] = useState("");
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  // button
+  useEffect(() => {
+    if (wishlistData && wishlistData.length > 0) {
+      const wishlistMap = {};
+      wishlistData.forEach(item => {
+        wishlistMap[item.id] = true;
+      });
+      setFavorites(wishlistMap);
+    }
+  }, [wishlistData]);
+
   useEffect(() => {
     const handleScroll = () => {
       if (
@@ -79,6 +92,18 @@ const RestaurantList = ({ selectedLocation }) => {
           restaurant.location.toLowerCase() === selectedLocation.toLowerCase()
       );
     }
+    if (nameSearch) {
+      filtered = filtered.filter((restaurant) =>
+        restaurant.restaurant_name.toLowerCase().includes(nameSearch.toLowerCase())
+      );
+    }
+
+
+    if (locationSearch) {
+      filtered = filtered.filter((restaurant) =>
+        restaurant.location.toLowerCase().includes(locationSearch.toLowerCase())
+      );
+    }
 
     return filtered;
   };
@@ -112,9 +137,24 @@ const RestaurantList = ({ selectedLocation }) => {
     const now = new Date();
     return now >= open && now < close;
   };
+  const toggleFavorite = (id) => {
+    setFavorites(prev => {
+      const isFavorite = prev[id];
+      return {
+        ...prev,
+        [id]: !isFavorite
+      };
+    });
+    wishlistMutate({
+      id,
+      isFavorite: favorites[id] || false
+    });
+  };
 
   const resetFilters = () => {
     setFilter("all");
+    setNameSearch("");
+    setLocationSearch("");
   };
 
   return (
@@ -220,6 +260,38 @@ const RestaurantList = ({ selectedLocation }) => {
 
         <Col lg={9} md={8}>
           <Row>
+            <div className="d-flex justify-content-left align-items-center mb-4">
+              <div className="">
+                <Form.Group className="mb-0 me-3">
+                  <InputGroup>
+                    <Form.Control
+                      type="text"
+                      placeholder="Search Restaurant....."
+                      value={nameSearch}
+                      onChange={(e) => setNameSearch(e.target.value)}
+                    />
+                    <Button variant="success">
+                      <FaSearch />
+                    </Button>
+                  </InputGroup>
+                </Form.Group>
+              </div>
+              <div className="">
+                <Form.Group className="mb-0 me-3">
+                  <InputGroup>
+                    <Form.Control
+                      type="text"
+                      placeholder="Search Location....."
+                      value={locationSearch}
+                      onChange={(e) => setLocationSearch(e.target.value)}
+                    />
+                    <Button variant="success">
+                      <FaSearch />
+                    </Button>
+                  </InputGroup>
+                </Form.Group>
+              </div>
+            </div>
             {isLoading ? (
               <Col xs={12} className="text-center py-5">
                 <Spinner animation="border" variant="success" />
@@ -252,14 +324,14 @@ const RestaurantList = ({ selectedLocation }) => {
                           src={restaurant.images[0]}
                           className="restaurant-image"
                         />
-                        <div className="position-absolute top-0 start-0 m-3">
+                        <div className="position-absolute top-0 start-0 m-3 ">
                           <Badge
                             bg={
                               isOpen(restaurant.opening_hours)
                                 ? "success"
                                 : "danger"
                             }
-                            className="px-2 py-1"
+                            className="px-2 py-2"
                           >
                             {isOpen(restaurant.opening_hours)
                               ? "OPEN NOW"
@@ -268,15 +340,11 @@ const RestaurantList = ({ selectedLocation }) => {
                         </div>
                         <div className="position-absolute top-0 end-0 m-3">
                           <Button
-                            variant="light"
-                            className="rounded-circle p-2 shadow-sm d-flex align-items-center justify-content-center p-0 border-0 favorite-btn"
-                            onClick={() => handleFavoriteToggle(restaurant.id)}
+                            variant="link"
+                            className={`p-0 ${favorites[restaurant.id] ? 'text-danger' : 'text-dark'} custom-dropdown-toggle bg-light rounded-5 px-1`}
+                            onClick={() => toggleFavorite(restaurant.id)}
                           >
-                            {favorites.includes(restaurant.id) ? (
-                              <FaHeart className="text-danger" />
-                            ) : (
-                              <FaRegHeart />
-                            )}
+                            {favorites[restaurant.id] ? <FaHeart size={20} /> : <FaRegHeart size={20} />}
                           </Button>
                         </div>
                         {restaurant.bestOffer && (
@@ -307,11 +375,16 @@ const RestaurantList = ({ selectedLocation }) => {
                           </div>
                         </div>
 
-                        <div className="mb-3">
+                        {/* <div className="mb-3">
                           <span className="text-muted">
                             {restaurant.foodType}
                           </span>
-                        </div>
+                        </div> */}
+                        <p className="mb-1 text-muted small">
+                          <span className={`badge ${restaurant.type === 'veg' ? 'bg-success' : 'bg-danger'} me-2`}>
+                            {restaurant.type}
+                          </span>
+                        </p>
 
                         <div className="d-flex mb-1 text-muted small">
                           <div className="me-3">
@@ -380,4 +453,4 @@ const RestaurantList = ({ selectedLocation }) => {
   );
 };
 
-export default RestaurantList;
+export default AllRestaurant;

@@ -27,6 +27,8 @@ import r7 from './images/r7.jpg';
 import r8 from './images/r8.jpg';
 import banner2 from './images/banner2.webp';
 import banner from './images/bg-image1.jpg'
+import user from './images/user.png'
+
 export {
     welcome,
     photo,
@@ -56,6 +58,7 @@ export {
     r6,
     r7,
     r8,
-    banner2
-
+    banner2,
+    user,
+ 
 };

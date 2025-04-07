@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import BookTable from "../../Components/BookTable/BookTable.jsx"
 import { photo7 } from "../../../assets/index";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -8,6 +7,7 @@ import { FaRegSun } from "react-icons/fa6";
 import { FaArrowUp } from "react-icons/fa6";
 const Menus = () => {
   const [showAll, setShowAll] = useState(false);
+  const [quantities, setQuantities] = useState({});
   const [showButton, setShowButton] = useState(false);
   const swiperRef = useRef(null);
   const handleNext = () => {
@@ -208,7 +208,7 @@ const Menus = () => {
       },
     ],
   };
-// button
+  // button
   useEffect(() => {
     const handleScroll = () => {
       if (
@@ -229,6 +229,12 @@ const Menus = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const updateQuantity = (productId, amount) => {
+    setQuantities(prev => ({
+      ...prev,
+      [productId]: Math.max((prev[productId] || 0) + amount, 0),
+    }));
+  };
   const [expandedCategory, setExpandedCategory] = useState(null);
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeSubcategory, setActiveSubcategory] = useState(null);
@@ -258,7 +264,7 @@ const Menus = () => {
   const clearFilters = () => {
     setActiveCategory(null);
     setActiveSubcategory(null);
-    setShowAll(false); 
+    setShowAll(false);
   }
   const getFilteredProducts = () => {
     let filtered = menuData.products;
@@ -306,301 +312,320 @@ const Menus = () => {
 
   return (
     <>
-    <div className="container mt-4">
-    {showButton && (
-        <button
-          onClick={backToTop}
-          className="btn btn-danger btn-lg position-fixed"
-          style={{
-            bottom: '20px',
-            right: '20px',
-            zIndex: 1000,
-            borderRadius: '50%',
-          }}
-        >
-    <FaArrowUp />
-        </button>
-      )}
+      <div className="container mt-4">
+        {showButton && (
+          <button
+            onClick={backToTop}
+            className="btn btn-danger btn-lg position-fixed"
+            style={{
+              bottom: '20px',
+              right: '20px',
+              zIndex: 1000,
+              borderRadius: '50%',
+            }}
+          >
+            <FaArrowUp />
+          </button>
+        )}
 
-      <div className="position-relative">
-        <Swiper
-          ref={swiperRef}
-          modules={[]}
-          navigation={false}
-          loop={true}
-          slidesPerView={1}
-          className="swiper-container"
-        >
-          {sliderData.map((slide, index) => (
-            <SwiperSlide key={index} className="swiper-slide">
-              <div className="d-flex align-items-center bg-light rounded-4 p-4 shadow-lg border border-1 border-light">
-                <div className="me-4">
-                  <div className="rounded-circle d-flex justify-content-center align-items-center bg-white shadow-sm p-2">
-                    {slide.icon}
+        <div className="position-relative">
+          <Swiper
+            ref={swiperRef}
+            modules={[]}
+            navigation={false}
+            loop={true}
+            slidesPerView={1}
+            className="swiper-container"
+          >
+            {sliderData.map((slide, index) => (
+              <SwiperSlide key={index} className="swiper-slide">
+                <div className="d-flex align-items-center bg-light rounded-4 p-4 shadow-lg border border-1 border-light">
+                  <div className="me-4">
+                    <div className="rounded-circle d-flex justify-content-center align-items-center bg-white shadow-sm p-2">
+                      {slide.icon}
+                    </div>
+                  </div>
+                  <div className="flex-grow-1">
+                    <span className="fw-bold text-dark fs-5">{slide.title}</span>
+                    <p className="mb-0 text-dark small">{slide.description}</p>
                   </div>
                 </div>
-                <div className="flex-grow-1">
-                  <span className="fw-bold text-dark fs-5">{slide.title}</span>
-                  <p className="mb-0 text-muted small">{slide.description}</p>
-                </div>
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-        <div className="custom-navigation d-lg-flex justify-content-end position-absolute top-50 end-0 translate-middle-y z-1 mx-3">
-          <button
-            onClick={handlePrev}
-            className="prev-button border-0 bg-transparent mx-2"
-          >
-            <FaChevronLeft />
-          </button>
-          <button
-            onClick={handleNext}
-            className="next-button bg-transparent border-0"
-          >
-            <FaChevronRight />
-          </button>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+          <div className="custom-navigation d-lg-flex justify-content-end position-absolute top-50 end-0 translate-middle-y z-1 mx-3">
+            <button
+              onClick={handlePrev}
+              className="prev-button border-0 bg-transparent mx-2"
+            >
+              <FaChevronLeft />
+            </button>
+            <button
+              onClick={handleNext}
+              className="next-button bg-transparent border-0"
+            >
+              <FaChevronRight />
+            </button>
+          </div>
         </div>
-      </div>
-      <div className="row mt-5 ">
-        <div className="col-md-3">
-          <div className="card shadow-sm">
-            <div className="card-header p-3 all-button text-white">
-              <h5 className="mb-0 fs-3">Menu Categories</h5>
-            </div>
-            <div className="list-group list-group-flush ">
-              <button
-                className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ${!activeCategory ? "active" : ""
+        <div className="row mt-5 ">
+          <div className="col-md-3">
+            <div className="card shadow-sm">
+              <div className="card-header p-3 all-button text-white">
+                <h5 className="mb-0 fs-3">Menu Categories</h5>
+              </div>
+              <div className="list-group list-group-flush ">
+                <button
+                  className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ₹{!activeCategory ? "active" : ""
                   }`}
-                onClick={clearFilters}
-              >
-                All Items
-                <span className="badge bg-danger rounded-pill">
-                  {menuData.products.length}
-                </span>
-              </button>
+                  onClick={clearFilters}
+                >
+                  All Items
+                  <span className="badge bg-danger rounded-pill">
+                    {menuData.products.length}
+                  </span>
+                </button>
 
-              {menuData.categories.map((category) => (
-                <div key={category.id}>
-                  <button
-                    className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ${activeCategory === category.id && !activeSubcategory
+                {menuData.categories.map((category) => (
+                  <div key={category.id}>
+                    <button
+                      className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ₹{activeCategory === category.id && !activeSubcategory
                       ? "active"
                       : ""
                       }`}
-                    onClick={() => handleCategoryClick(category.id)}
-                  >
-                    {category.name}
-                    <div>
-                      <span className="badge bg-secondary rounded-pill ">
-                        {
-                          menuData.products.filter(
-                            (p) => p.categoryId === category.id
-                          ).length
-                        }
-                      </span>
-                      <i
-                        className={`fas fa-chevron-${expandedCategory === category.id ? "up" : "down"
-                          }`}
-                      ></i>
-                    </div>
-                  </button>
-
-                  {expandedCategory === category.id && (
-                    <div className="subcategory-list">
-                      {category.subcategories.map((subcategory) => (
-                        <button
-                          key={subcategory.id}
-                          className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ps-4 ${activeSubcategory === subcategory.id ? "active" : ""
-                            }`}
-                          onClick={() =>
-                            handleSubcategoryClick(category.id, subcategory.id)
+                      onClick={() => handleCategoryClick(category.id)}
+                    >
+                      {category.name}
+                      <div>
+                        <span className="badge bg-secondary rounded-pill ">
+                          {
+                            menuData.products.filter(
+                              (p) => p.categoryId === category.id
+                            ).length
                           }
-                        >
-                          {subcategory.name}
-                          <span className="badge bg-secondary rounded-pill">
-                            {countSubcategoryProducts(
-                              category.id,
-                              subcategory.id
-                            )}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="card mt-3 shadow-sm border-0 overflow-hidden">
-            <div className="card-header p-3 all-button text-white">
-              <h6 className="mb-0 fs-5">Dietary Preferences</h6>
-            </div>
-            <div className="card-body p-3 bg-light">
-              <div className="d-flex flex-column gap-3">
-                <div className="form-check form-switch d-flex align-items-center p-2 bg-white rounded shadow-sm">
-                  <input
-                    className="form-check-input mx-1 me-4"
-                    type="checkbox"
-                    role="switch"
-                    id="vegSwitch"
-                    checked={vegFilter}
-                    onChange={handleVegFilterChange}
-                  />
-                  <label className="form-check-label d-flex align-items-center" htmlFor="vegSwitch">
-                    <span className="badge bg-success me-3">
-                      <i className="fas fa-leaf"></i>
-                    </span>
-                    <span className="fw-medium">Vegetarian</span>
-                  </label>
-                </div>
+                        </span>
+                        <i
+                          className={`fas fa-chevron-₹{expandedCategory === category.id ? "up" : "down"
+                          }`}
+                        ></i>
+                      </div>
+                    </button>
 
-                <div className="form-check form-switch d-flex align-items-center bg-white rounded shadow-sm p-2">
-                  <input
-                    className="form-check-input mx-1 me-4"
-                    type="checkbox"
-                    role="switch"
-                    id="nonVegSwitch"
-                    checked={nonVegFilter}
-                    onChange={handleNonVegFilterChange}
-                  />
-                  <label className="form-check-label d-flex align-items-center" htmlFor="nonVegSwitch">
-                    <span className="badge bg-danger me-3" >
-                      <i className="fas fa-drumstick-bite"></i>
-                    </span>
-                    <span className="fw-medium">Non-Vegetarian</span>
-                  </label>
-                </div>
-
-                <div className="form-check form-switch d-flex align-items-center p-2 bg-white rounded shadow-sm">
-                  <input
-                    className="form-check-input mx-1 me-4"
-                    type="checkbox"
-                    role="switch"
-                    id="bestSellerSwitch"
-                    checked={bestSellerFilter}
-                    onChange={handleBestSellerFilterChange}
-                  />
-                  <label className="form-check-label d-flex align-items-center" htmlFor="bestSellerSwitch">
-                    <span className="badge bg-warning text-dark me-3">
-                      <i className="fas fa-star"></i>
-                    </span>
-                    <span className="fw-medium">Best Seller</span>
-                  </label>
-                </div>
+                    {expandedCategory === category.id && (
+                      <div className="subcategory-list">
+                        {category.subcategories.map((subcategory) => (
+                          <button
+                            key={subcategory.id}
+                            className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ps-4 ₹{activeSubcategory === subcategory.id ? "active" : ""
+                            }`}
+                            onClick={() =>
+                              handleSubcategoryClick(category.id, subcategory.id)
+                            }
+                          >
+                            {subcategory.name}
+                            <span className="badge bg-secondary rounded-pill">
+                              {countSubcategoryProducts(
+                                category.id,
+                                subcategory.id
+                              )}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
-            <div className="card-footer bg-white p-3 text-center">
-              <button
-                className="btn btn-sm btn-outline-secondary w-100 all-button text-light py-2 fw-bold"
-                onClick={() => {
-                  setVegFilter(false);
-                  setNonVegFilter(false);
-                  setBestSellerFilter(false);
-                }}
-              >
-                Reset Filters
-              </button>
+            <div className="card mt-3 shadow-sm border-0 overflow-hidden">
+              <div className="card-header p-3 all-button text-white">
+                <h6 className="mb-0 fs-5">Dietary Preferences</h6>
+              </div>
+              <div className="card-body p-3 bg-light">
+                <div className="d-flex flex-column gap-3">
+                  <div className="form-check form-switch d-flex align-items-center p-2 bg-white rounded shadow-sm">
+                    <input
+                      className="form-check-input mx-1 me-4"
+                      type="checkbox"
+                      role="switch"
+                      id="vegSwitch"
+                      checked={vegFilter}
+                      onChange={handleVegFilterChange}
+                    />
+                    <label className="form-check-label d-flex align-items-center" htmlFor="vegSwitch">
+                      <span className="badge bg-success me-3">
+                        <i className="fas fa-leaf"></i>
+                      </span>
+                      <span className="fw-medium">Vegetarian</span>
+                    </label>
+                  </div>
+
+                  <div className="form-check form-switch d-flex align-items-center bg-white rounded shadow-sm p-2">
+                    <input
+                      className="form-check-input mx-1 me-4"
+                      type="checkbox"
+                      role="switch"
+                      id="nonVegSwitch"
+                      checked={nonVegFilter}
+                      onChange={handleNonVegFilterChange}
+                    />
+                    <label className="form-check-label d-flex align-items-center" htmlFor="nonVegSwitch">
+                      <span className="badge bg-danger me-3" >
+                        <i className="fas fa-drumstick-bite"></i>
+                      </span>
+                      <span className="fw-medium">Non-Vegetarian</span>
+                    </label>
+                  </div>
+
+                  <div className="form-check form-switch d-flex align-items-center p-2 bg-white rounded shadow-sm">
+                    <input
+                      className="form-check-input mx-1 me-4"
+                      type="checkbox"
+                      role="switch"
+                      id="bestSellerSwitch"
+                      checked={bestSellerFilter}
+                      onChange={handleBestSellerFilterChange}
+                    />
+                    <label className="form-check-label d-flex align-items-center" htmlFor="bestSellerSwitch">
+                      <span className="badge bg-warning text-dark me-3">
+                        <i className="fas fa-star"></i>
+                      </span>
+                      <span className="fw-medium">Best Seller</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="card-footer bg-white p-3 text-center">
+                <button
+                  className="btn btn-sm btn-outline-secondary w-100 all-button text-light py-2 fw-bold"
+                  onClick={() => {
+                    setVegFilter(false);
+                    setNonVegFilter(false);
+                    setBestSellerFilter(false);
+                  }}
+                >
+                  Reset Filters
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="col-md-9">
-          <div className="card shadow-sm">
-            <div className="card-header all-button text-white d-flex justify-content-between align-items-center">
-              <h5 className="mb-0">
-                {!activeCategory
-                  ? "All Items"
-                  : !activeSubcategory
-                    ? menuData.categories.find((c) => c.id === activeCategory)
+          <div className="col-md-9">
+            <div className="card shadow-sm">
+              <div className="card-header all-button text-white d-flex justify-content-between align-items-center">
+                <h5 className="mb-0">
+                  {!activeCategory
+                    ? "All Items"
+                    : !activeSubcategory
+                      ? menuData.categories.find((c) => c.id === activeCategory)
+                        ?.name
+                      : `₹{menuData.categories.find((c) => c.id === activeCategory)
                       ?.name
-                    : `${menuData.categories.find((c) => c.id === activeCategory)
-                      ?.name
-                    } > ${menuData.categories
+                    } > ₹{menuData.categories
                       .find((c) => c.id === activeCategory)
                       ?.subcategories.find((s) => s.id === activeSubcategory)
                       ?.name
                     }`}
-                {/* {(vegFilter || nonVegFilter || bestSellerFilter) && (
+                  {/* {(vegFilter || nonVegFilter || bestSellerFilter) && (
                   <span className="ms-2 fs-6">
                     {vegFilter && <span className="badge bg-success me-1">Veg</span>}
                     {nonVegFilter && <span className="badge bg-danger me-1">Non-Veg</span>}
                     {bestSellerFilter && <span className="badge bg-warning text-dark">Best Seller</span>}
                   </span>
                 )} */}
-              </h5>
-              <span className="badge bg-light text-dark">
-                {filteredProducts.length} items
-              </span>
-            </div>
-            <div className="card-body">
-              {filteredProducts.length === 0 ? (
-                <div className="text-center py-5">
-                  <p className="text-muted">No items found with the selected filters.</p>
-                </div>
-              ) : (
-                <>
-                  <div className="row row-cols-1 row-cols-md-2 g-4">
-                    {(showAll ? filteredProducts : filteredProducts.slice(0, 8)).map((product) => (
+                </h5>
+                <span className="badge bg-light text-dark">
+                  {filteredProducts.length} items
+                </span>
+              </div>
+              <div className="card-body">
+                {filteredProducts.length === 0 ? (
+                  <div className="text-center py-5">
+                    <p className="text-dark">No items found with the selected filters.</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="row row-cols-1 row-cols-md-2 g-4">
+                      {(showAll ? filteredProducts : filteredProducts.slice(0, 8)).map((product) => (
 
 
-                      <div key={product.id} className="col">
-                        <div className="card h-100 border-0 shadow-sm">
-                          <div className="row g-0">
-                            <div className="col-4 position-relative">
-                              <img
-                                src={product.image}
-                                className="img-fluid rounded-start h-100 object-fit-cover"
-                                alt={product.name}
-                              />
-                              <div className="position-absolute top-0 start-0 p-1">
-                                {/* Uncomment if needed */}
-                                {/* <span className={`badge ${product.isVeg ? 'bg-success' : 'bg-danger'}`}>
+                        <div key={product.id} className="col">
+                          <div className="card h-100 border-0 shadow-sm">
+                            <div className="row g-0">
+                              <div className="col-4 position-relative">
+                                <img
+                                  src={product.image}
+                                  className="img-fluid rounded-start h-100 object-fit-cover"
+                                  alt={product.name}
+                                />
+                                <div className="position-absolute top-0 start-0 p-1">
+                                  {/* Uncomment if needed */}
+                                  {/* <span className={`badge ₹{product.isVeg ? 'bg-success' : 'bg-danger'}`}>
                       {product.isVeg ? 'Veg' : 'Non-Veg'}
                     </span> */}
-                                {product.isBestSeller && (
-                                  <span className="badge bg-warning text-dark ms-1">Best Seller</span>
-                                )}
+                                  {product.isBestSeller && (
+                                    <span className="badge bg-warning text-dark ms-1">Best Seller</span>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                            <div className="col-8">
-                              <div className="card-body">
-                                <h5 className="card-title">{product.name}</h5>
-                                <p className="card-text text-muted small">{product.description}</p>
-                                <div className="d-flex justify-content-between align-items-center">
-                                  <span className="fw-bold text-primary">${product.price}</span>
-                                  <button className="btn btn-sm btn-outline-success">Add to Cart</button>
+                              <div className="col-8">
+                                <div className="card-body">
+                                  <h5 className="card-title">{product.name}</h5>
+                                  <p className="card-text text-dark small">{product.description}</p>
+                                  <div className="d-flex justify-content-between align-items-center">
+                                    <span className=" fw-bold text-success ">
+                                      ₹{product.price.toFixed(2)}
+                                    </span>
+                                    <span className="text-dark">
+                                      Total: ₹{(product.price * (quantities[product.id] || 0)).toFixed(2)}
+                                    </span>
+                                    <div className="d-flex align-items-center">
+                                      <button
+                                        className="btn btn-sm btn-outline-secondary"
+                                        onClick={() => updateQuantity(product.id, -1)}
+                                      >
+                                        -
+                                      </button>
+                                      <span className="mx-2">{quantities[product.id] || 0}</span>
+                                      <button
+                                        className="btn btn-sm btn-outline-secondary"
+                                        onClick={() => updateQuantity(product.id, 1)}
+                                      >
+                                        +
+                                      </button>
+                                    </div>
+                                  </div>
+
+
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {filteredProducts.length > 8 && !showAll && (
-                    <div className="text-center mt-3">
-                      <button
-                        className="btn btn-outline-success all-button text-light fw-semibold"
-                        onClick={() => setShowAll(true)}
-                      >
-                        View More <FaChevronRight className="ms-1" />
-                      </button>
+                      ))}
                     </div>
-                  )}
+
+                    {filteredProducts.length > 8 && !showAll && (
+                      <div className="text-center mt-3">
+                        <button
+                          className="btn btn-outline-success all-button text-light fw-semibold"
+                          onClick={() => setShowAll(true)}
+                        >
+                          View More <FaChevronRight className="ms-1" />
+                        </button>
+                      </div>
+                    )}
 
 
-                </>
-              )}
+                  </>
+                )}
+              </div>
+
             </div>
-
           </div>
         </div>
       </div>
-    </div>
-    <div className="">
-    <BookTable />
-    </div>
-</>
+
+    </>
   );
 };
 
