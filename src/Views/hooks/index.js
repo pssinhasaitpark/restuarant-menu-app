@@ -1,3 +1,4 @@
 import useBookTables from './useBookTables'; 
 import useRestaurants from './useRestaurants';
-export { useBookTables,useRestaurants};
+import useWhislists from './useWhislists';
+export { useBookTables,useRestaurants,useWhislists};

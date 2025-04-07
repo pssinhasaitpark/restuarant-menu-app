@@ -50,7 +50,7 @@ const BookTable = () => {
   });
 
   return (
-    <Container fluid className="py-5">
+    <Container fluid className="py-5 mb-5">
       <Row className="justify-content-center">
         <Col lg={8} md={10} sm={12}>
           <Card className="shadow border-0">
@@ -178,6 +178,22 @@ const BookTable = () => {
                       </InputGroup>
                     </Form.Group>
                   </Col>
+                  <Col md={6}>
+                    <Form.Group className="mb-4">
+                      <Form.Label className="fw-bold">Selected Menu Items</Form.Label>
+                      <Form.Control as="textarea" rows={3} 
+                    
+                       />
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group className="mb-4">
+                      <Form.Label className="fw-bold">Selected Menu Items</Form.Label>
+                      <Form.Control as="textarea" rows={3} 
+                    
+                       />
+                    </Form.Group>
+                  </Col>
                 </Row>
                 <Form.Group className="mb-4">
                   <Form.Label className="fw-bold">Special Requests</Form.Label>
@@ -190,6 +206,7 @@ const BookTable = () => {
                     onChange={formik.handleChange}
                   />
                 </Form.Group>
+               
                 <div className="d-grid gap-2 col-md-6 mx-auto">
                   <Button
                     variant="primary"

@@ -71,7 +71,7 @@ const PopularRestaurant = () => {
           </span>
           Restaurants
         </p>
-        <Link to="/all-restaurants" className="btn btn-outline-success d-flex align-items-center">
+        <Link to="/order" className="btn btn-outline-success d-flex align-items-center">
        Your Order <FaArrowRight className="ms-2" />
         </Link>
       </div>

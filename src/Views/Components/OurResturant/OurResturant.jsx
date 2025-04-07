@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -14,16 +14,26 @@ import {
 import { BsGeoAlt } from "react-icons/bs";
 import { AiOutlineGlobal } from "react-icons/ai";
 import { BiFilterAlt } from "react-icons/bi";
-import { useRestaurants } from '../../hooks/index';
+import { useRestaurants, useWhislists } from '../../hooks/index';
 
 const OurRestaurant = ({ selectedLocation }) => {
   const { data: restaurants, isLoading } = useRestaurants();
+  const { wishlistData, mutate: wishlistMutate } = useWhislists();
   const [filters, setFilters] = useState({
     veg: false,
     nonVeg: false,
     offers: false,
   });
   const [favorites, setFavorites] = useState({});
+  useEffect(() => {
+    if (wishlistData && wishlistData.length > 0) {
+      const wishlistMap = {};
+      wishlistData.forEach(item => {
+        wishlistMap[item.id] = true;
+      });
+      setFavorites(wishlistMap);
+    }
+  }, [wishlistData]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -48,10 +58,17 @@ const OurRestaurant = ({ selectedLocation }) => {
   };
 
   const toggleFavorite = (id) => {
-    setFavorites(prev => ({
-      ...prev,
-      [id]: !prev[id]
-    }));
+    setFavorites(prev => {
+      const isFavorite = prev[id];
+      return {
+        ...prev,
+        [id]: !isFavorite
+      };
+    });
+    wishlistMutate({ 
+      id, 
+      isFavorite: favorites[id] || false 
+    });
   };
 
   const resetFilters = () => {
@@ -100,7 +117,6 @@ const OurRestaurant = ({ selectedLocation }) => {
     }));
   };
 
-
   const renderStars = (rating) => {
     const stars = [];
     for (let i = 0; i < 5; i++) {
@@ -116,23 +132,20 @@ const OurRestaurant = ({ selectedLocation }) => {
   const isOpen = (openingTime, closingTime) => {
     if (!openingTime || !closingTime) return false;
 
-    // Normalize the input by removing spaces
     const normalizeTime = (time) => time.trim().replace(/\s+/g, '');
 
-    // Convert opening time
     const [openHour, openMinutePart] = normalizeTime(openingTime).split(':');
-    const openPeriod = openMinutePart.slice(-2); // AM/PM
-    const openMinutes = openMinutePart.slice(0, -2); // Get minutes without AM/PM
+    const openPeriod = openMinutePart.slice(-2); 
+    const openMinutes = openMinutePart.slice(0, -2); 
     const openDate = new Date();
     openDate.setHours(
       parseInt(openHour) % 12 + (openPeriod.toUpperCase() === 'PM' ? 12 : 0),
       parseInt(openMinutes)
     );
 
-    // Convert closing time
     const [closeHour, closeMinutePart] = normalizeTime(closingTime).split(':');
-    const closePeriod = closeMinutePart.slice(-2); // AM/PM
-    const closeMinutes = closeMinutePart.slice(0, -2); // Get minutes without AM/PM
+    const closePeriod = closeMinutePart.slice(-2);
+    const closeMinutes = closeMinutePart.slice(0, -2); 
     const closeDate = new Date();
     closeDate.setHours(
       parseInt(closeHour) % 12 + (closePeriod.toUpperCase() === 'PM' ? 12 : 0),
@@ -140,8 +153,6 @@ const OurRestaurant = ({ selectedLocation }) => {
     );
 
     const now = new Date();
-
-    // Adjust for cases where closing time is on the next day
     if (closeDate < openDate) {
       closeDate.setDate(closeDate.getDate() + 1);
     }
@@ -230,7 +241,7 @@ const OurRestaurant = ({ selectedLocation }) => {
                     <div className="position-absolute" style={{ top: '10px', right: '10px', zIndex: 2 }}>
                       <Button
                         variant="link"
-                        className={`p-0 ${favorites[restaurant.id] ? 'text-danger' : 'text-muted'}`}
+                        className={`p-0 ${favorites[restaurant.id] ? 'text-danger' : 'text-muted'} custom-dropdown-toggle`}
                         onClick={() => toggleFavorite(restaurant.id)}
                       >
                         {favorites[restaurant.id] ? <FaHeart size={20} /> : <FaRegHeart size={20} />}

@@ -1,4 +1,7 @@
 import Menus from "./Menus/Menus";
 import AllResturant from "./AllResturant/AllResturant";
 import Whislist from "./Whislist/Whislist";
-export{Menus,AllResturant,Whislist}
+import YourOrder from "./YourOrder/YourOrder";
+import YourProfile from "./YourProfile/YourProfile";
+import YourActivity from "./YourActivity/YourActivity";
+export{Menus,AllResturant,Whislist,YourOrder,YourProfile,YourActivity}
