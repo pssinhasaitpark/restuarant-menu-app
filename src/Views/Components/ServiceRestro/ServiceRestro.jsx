@@ -7,7 +7,6 @@ import {
     photo7,
     photo8,
 } from '../../../assets/index';
-import { Link } from 'react-router-dom';
 
 const restaurants = [
     {
@@ -61,7 +60,7 @@ const ServiceRestro = () => {
             <h2 className="all-heading mb-4 text-center underline">Our Services</h2>
             <div className="row ">
                 {restaurants.map((restaurant) => (
-                    <div className="col-sm-6 col-md-4 mb-4" key={restaurant.id}>
+                    <div className="col-sm-6 col-md-4 mb-4 testimonial-card" key={restaurant.id}>
                         <div className="card" style={{ height: "24rem" }} >
                             <img
                                 src={restaurant.image}

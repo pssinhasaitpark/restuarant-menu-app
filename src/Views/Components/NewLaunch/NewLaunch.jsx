@@ -19,9 +19,9 @@ const NewLaunch = () => {
   return (
     <div className='container mt-5'id="launch">
       <h2 className="all-heading mb-4 text-center underline">Explore New Launch</h2>
-      <div className='row row-cols-2'>
+      <div className='row row-cols-2 '>
         {newRestr.slice(0, 6).map((launch, index) => (
-          <div className='col-sm-2 mb-4' key={index}>
+          <div className='col-sm-2 mb-4 testimonial-card' key={index}>
             <div className='text-center'>
               <Link to="/menu">
                 <img src={launch.image} alt={launch.name} className='launch-res' />

@@ -24,6 +24,7 @@ const Navbarcompo = () => {
                   </Link>
                 </div>
                 <Nav className='mx-auto'>
+                <Nav.Link href='/' className='fs-5'>Home</Nav.Link>
                   <Nav.Link href='#Restaurants' className='fs-5'>Top Restaurants</Nav.Link>
                   <Nav.Link href='#launch' className='fs-5'>New Launch</Nav.Link>
                   <Nav.Link href='#services' className='fs-5'>Services</Nav.Link>

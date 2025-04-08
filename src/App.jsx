@@ -9,7 +9,7 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="menu" element={<MenusLayout />} />
+          <Route path="/menu/:restaurantId" element={<MenusLayout />} />
           <Route path="allresturant" element={<AllResturantLayout />} />
           <Route path="whislist" element={<WhislistLayouts />} />
           <Route path="order" element={<YourOrderLayout />} />

@@ -15,8 +15,10 @@ import { BsGeoAlt } from "react-icons/bs";
 import { AiOutlineGlobal } from "react-icons/ai";
 import { BiFilterAlt } from "react-icons/bi";
 import { useRestaurants, useWhislists } from '../../hooks/index';
-
+import { useSelector } from 'react-redux';
 const OurRestaurant = ({ selectedLocation }) => {
+  const categories = useSelector((state) => state.menu.categories);
+  const restaurantId = categories.length > 0 ? categories[0].restaurant_id : null;
   const { data: restaurants, isLoading } = useRestaurants();
   const { wishlistData, mutate: wishlistMutate } = useWhislists();
   const [filters, setFilters] = useState({
@@ -65,9 +67,9 @@ const OurRestaurant = ({ selectedLocation }) => {
         [id]: !isFavorite
       };
     });
-    wishlistMutate({ 
-      id, 
-      isFavorite: favorites[id] || false 
+    wishlistMutate({
+      id,
+      isFavorite: favorites[id] || false
     });
   };
 
@@ -135,8 +137,8 @@ const OurRestaurant = ({ selectedLocation }) => {
     const normalizeTime = (time) => time.trim().replace(/\s+/g, '');
 
     const [openHour, openMinutePart] = normalizeTime(openingTime).split(':');
-    const openPeriod = openMinutePart.slice(-2); 
-    const openMinutes = openMinutePart.slice(0, -2); 
+    const openPeriod = openMinutePart.slice(-2);
+    const openMinutes = openMinutePart.slice(0, -2);
     const openDate = new Date();
     openDate.setHours(
       parseInt(openHour) % 12 + (openPeriod.toUpperCase() === 'PM' ? 12 : 0),
@@ -145,7 +147,7 @@ const OurRestaurant = ({ selectedLocation }) => {
 
     const [closeHour, closeMinutePart] = normalizeTime(closingTime).split(':');
     const closePeriod = closeMinutePart.slice(-2);
-    const closeMinutes = closeMinutePart.slice(0, -2); 
+    const closeMinutes = closeMinutePart.slice(0, -2);
     const closeDate = new Date();
     closeDate.setHours(
       parseInt(closeHour) % 12 + (closePeriod.toUpperCase() === 'PM' ? 12 : 0),
@@ -283,14 +285,16 @@ const OurRestaurant = ({ selectedLocation }) => {
                           </div>
 
                           <div className="mt-2 d-flex gap-2">
-                            <Link to="/menu" onClick={scrollToTop}>
-                              <Button variant="success" size="sm" className="rounded-2 px-3 all-button">
-                                Book Table
-                              </Button>
-                            </Link>
-                            <Link to="/menu" onClick={scrollToTop}>
+                            <Link to={`/menu/${restaurant.id}`} onClick={scrollToTop}>
                               <Button variant="outline-success" size="sm" className="rounded-2 px-3 all-button text-light">
                                 View Menu
+                              </Button>
+                            </Link>
+
+
+                            <Link to="/menu" onClick={scrollToTop}>
+                              <Button variant="outline-success" size="sm" className="rounded-2 px-3 all-button text-light">
+                                View Table
                               </Button>
                             </Link>
                           </div>
