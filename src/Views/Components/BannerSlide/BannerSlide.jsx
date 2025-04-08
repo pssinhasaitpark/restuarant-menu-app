@@ -36,7 +36,7 @@ const BannerSlide = () => {
             <div className="slider-row">
                 <div className="slider-track">
                     {[...imagesWithNames, ...imagesWithNames].map((item, index) => (
-                        <div className="slider-item" key={`first-${index}`}>
+                        <div className="slider-item testimonial-card" key={`first-${index}`}>
                             <img
                                 src={item.src}
                                 alt={`Food item ${index + 1}`}

@@ -1,10 +1,19 @@
-import React from 'react';
-import { Container, Form, Button, Card, Row, Col, InputGroup } from 'react-bootstrap';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import './BookTable.css';
-import {useBookTables} from '../../hooks/index';
-
+import React from "react";
+import {
+  Container,
+  Form,
+  Button,
+  Card,
+  Row,
+  Col,
+  InputGroup,
+} from "react-bootstrap";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import "./BookTable.css";
+import { useBookTables } from "../../hooks/index";
+import { FaUser,FaMobile,FaCalendar } from "react-icons/fa";
+import { IoPeopleSharp,IoTimeSharp } from "react-icons/io5";
 const phoneRegExp =
   /^(\+?\d{0-9})?\s?-?\s?(\(?\d{7}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/;
 
@@ -13,26 +22,26 @@ const BookTable = () => {
 
   const formik = useFormik({
     initialValues: {
-      name: '',
-      mobile: '',
-      people: '',
-      date: '',
-      time: '',
-      specialRequests: '',
+      name: "",
+      mobile: "",
+      people: "",
+      date: "",
+      time: "",
+      specialRequests: "",
     },
     validationSchema: Yup.object({
       name: Yup.string()
         .max(15, "Must be 15 characters or less")
-        .required('Required'),
-        contact_no: Yup.string()
-        .required('Required')
+        .required("Required"),
+      contact_no: Yup.string()
+        .required("Required")
         .matches(phoneRegExp, "Phone number is not valid"),
       people: Yup.number()
-        .required('Required')
-        .min(1, 'Must be at least 1')
-        .max(20, 'Must be at most 20'),
-      date: Yup.date().required('Required'),
-      time: Yup.string().required('Required'),
+        .required("Required")
+        .min(1, "Must be at least 1")
+        .max(20, "Must be at most 20"),
+      date: Yup.date().required("Required"),
+      time: Yup.string().required("Required"),
     }),
     onSubmit: (values) => {
       const bookingData = {
@@ -41,11 +50,11 @@ const BookTable = () => {
         num_of_people: values.people,
         booking_time: values.time,
         date: values.date,
-        instruction: values.specialRequests || '',
+        instruction: values.specialRequests || "",
       };
 
-      mutate(bookingData); 
-      formik.resetForm(); 
+      mutate(bookingData);
+      formik.resetForm();
     },
   });
 
@@ -56,7 +65,9 @@ const BookTable = () => {
           <Card className="shadow border-0">
             <Card.Header className="text-center p-4 all-button text-white">
               <h2 className="fw-bold">RESERVE YOUR TABLE</h2>
-              <p className="mb-0">Experience exceptional dining at our restaurant</p>
+              <p className="mb-0">
+                Experience exceptional dining at our restaurant
+              </p>
             </Card.Header>
             <Card.Body className="p-4">
               <Form onSubmit={formik.handleSubmit}>
@@ -65,8 +76,8 @@ const BookTable = () => {
                     <Form.Group className="mb-3">
                       <Form.Label className="fw-bold">Your Name</Form.Label>
                       <InputGroup>
-                        <InputGroup.Text className="bg-light">
-                          <i className="bi bi-person-fill"></i>
+                        <InputGroup.Text className=" all-button">
+                        <FaUser className="text-light"/>
                         </InputGroup.Text>
                         <Form.Control
                           type="text"
@@ -88,8 +99,8 @@ const BookTable = () => {
                     <Form.Group className="mb-3">
                       <Form.Label className="fw-bold">Mobile Number</Form.Label>
                       <InputGroup>
-                        <InputGroup.Text className="bg-light">
-                          <i className="bi bi-phone-fill"></i>
+                        <InputGroup.Text  className=" all-button">
+                        <FaMobile className="text-light"/>
                         </InputGroup.Text>
                         <Form.Control
                           type="tel"
@@ -98,7 +109,10 @@ const BookTable = () => {
                           value={formik.values.contact_no}
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
-                          isInvalid={formik.touched.contact_no && formik.errors.contact_no}
+                          isInvalid={
+                            formik.touched.contact_no &&
+                            formik.errors.contact_no
+                          }
                           required
                         />
                         <Form.Control.Feedback type="invalid">
@@ -111,10 +125,13 @@ const BookTable = () => {
                 <Row className="mb-3">
                   <Col md={4}>
                     <Form.Group className="mb-3">
-                      <Form.Label className="fw-bold">Number of Guests</Form.Label>
+                      <Form.Label className="fw-bold">
+                        Number of Guests
+                      </Form.Label>
                       <InputGroup>
-                        <InputGroup.Text className="bg-light">
-                          <i className="bi bi-people-fill"></i>
+                        <InputGroup.Text  className=" all-button">
+                        <IoPeopleSharp className="text-light"/>
+
                         </InputGroup.Text>
                         <Form.Control
                           type="number"
@@ -125,7 +142,9 @@ const BookTable = () => {
                           value={formik.values.people}
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
-                          isInvalid={formik.touched.people && formik.errors.people}
+                          isInvalid={
+                            formik.touched.people && formik.errors.people
+                          }
                           required
                         />
                         <Form.Control.Feedback type="invalid">
@@ -138,8 +157,8 @@ const BookTable = () => {
                     <Form.Group className="mb-3">
                       <Form.Label className="fw-bold">Date</Form.Label>
                       <InputGroup>
-                        <InputGroup.Text className="bg-light">
-                          <i className="bi bi-calendar-event-fill"></i>
+                        <InputGroup.Text  className=" all-button">
+                        <FaCalendar className="text-light"/>
                         </InputGroup.Text>
                         <Form.Control
                           type="date"
@@ -160,8 +179,8 @@ const BookTable = () => {
                     <Form.Group className="mb-3">
                       <Form.Label className="fw-bold">Time</Form.Label>
                       <InputGroup>
-                        <InputGroup.Text className="bg-light">
-                          <i className="bi bi-clock-fill"></i>
+                        <InputGroup.Text  className=" all-button">
+                        <IoTimeSharp className="text-light" />
                         </InputGroup.Text>
                         <Form.Control
                           type="time"
@@ -178,20 +197,16 @@ const BookTable = () => {
                       </InputGroup>
                     </Form.Group>
                   </Col>
-                  <Col md={6}>
+                  <Col md={12}>
                     <Form.Group className="mb-4">
-                      <Form.Label className="fw-bold">Selected Menu Items</Form.Label>
-                      <Form.Control as="textarea" rows={3} 
-                    
-                       />
-                    </Form.Group>
-                  </Col>
-                  <Col md={6}>
-                    <Form.Group className="mb-4">
-                      <Form.Label className="fw-bold">Selected Menu Items</Form.Label>
-                      <Form.Control as="textarea" rows={3} 
-                    
-                       />
+                      <Form.Label className="fw-bold">
+                        Selected Menu Items
+                      </Form.Label>
+                      <Form.Control
+                        as="textarea"
+                        rows={3}
+                        placeholder="Selected Menu Items for Dinning....."
+                      />
                     </Form.Group>
                   </Col>
                 </Row>
@@ -206,7 +221,7 @@ const BookTable = () => {
                     onChange={formik.handleChange}
                   />
                 </Form.Group>
-               
+
                 <div className="d-grid gap-2 col-md-6 mx-auto">
                   <Button
                     variant="primary"

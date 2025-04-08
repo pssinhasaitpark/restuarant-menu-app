@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axiosInstance from '../axios/axios';
+import axiosInstance from '../Redux/axios/axios';
 
 const useWhislists = () => {
   const queryClient = useQueryClient();
-  
+
   const fetchWishlist = async () => {
     try {
       const response = await axiosInstance.get('/restaurant/wishlist');
@@ -37,7 +37,7 @@ const useWhislists = () => {
   const { data: wishlistData = [], isLoading, refetch } = useQuery({
     queryKey: ['wishlist'],
     queryFn: fetchWishlist,
-    staleTime: 10000, 
+    staleTime: 10000,
   });
 
   const mutation = useMutation({
@@ -46,15 +46,15 @@ const useWhislists = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wishlist'] });
-      refetch(); 
+      refetch();
     },
   });
 
-  return { 
-    wishlistData, 
-    isLoading, 
+  return {
+    wishlistData,
+    isLoading,
     mutate: mutation.mutate,
-    refetch 
+    refetch
   };
 };
 

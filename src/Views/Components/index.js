@@ -10,4 +10,5 @@ import SupportCompo from "./SupportCompo/SupportCompo";
 import Footer from "./Footer/Footer";
 import RestrGallery from "./RestrGallery/RestrGallery";
 import PopularRestaurant from "./PopularRestaurant/PopularRestaurant";
-export{HeaderTop,BannerSlide, OurResturant,BookTable,Navbarcompo,NewLaunch,ServiceRestro,Testimonial,SupportCompo,Footer,PopularRestaurant,RestrGallery} 
+import DiscountSlider from "./DiscountSlider/DiscountSlider";
+export{HeaderTop,BannerSlide, OurResturant,BookTable,Navbarcompo,NewLaunch,ServiceRestro,Testimonial,SupportCompo,Footer,PopularRestaurant,RestrGallery,DiscountSlider} 

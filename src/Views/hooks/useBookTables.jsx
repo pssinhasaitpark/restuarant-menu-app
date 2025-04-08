@@ -1,15 +1,15 @@
 
 import { useMutation } from '@tanstack/react-query';
-import axiosInstance from '../axios/axios';
+import axiosInstance from '../Redux/axios/axios';
 
 const bookTable = async (bookingData) => {
   const response = await axiosInstance.post('/booking', bookingData);
-  return response.data; 
+  return response.data;
 };
 
 const useBookTables = () => {
   return useMutation({
-    mutationFn: bookTable, 
+    mutationFn: bookTable,
     onSuccess: (data) => {
       console.log('Booking successful:', data);
       alert(data.message);

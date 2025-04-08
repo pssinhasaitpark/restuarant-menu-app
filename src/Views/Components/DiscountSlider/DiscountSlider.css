@@ -1,0 +1,19 @@
+.swiper-container {
+    padding: 30px 0;
+  }
+  .swiper-pagination-bullet-active {
+    background-color: #333;
+  }
+  .btn-redeem:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s;
+  }
+
+  @media (max-width: 768px) {
+    .custom-navigation {
+      bottom: -20px;
+      top: auto;
+      transform: none;
+    }
+  }

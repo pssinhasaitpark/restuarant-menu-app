@@ -26,7 +26,10 @@ import { Link } from "react-router-dom";
 import { useRestaurants, useWhislists } from "../../hooks/index";
 import "./AllRestaurant.css";
 import { FaArrowUp } from "react-icons/fa6";
+import { useSelector } from 'react-redux';
 const AllRestaurant = ({ selectedLocation }) => {
+  const categories = useSelector((state) => state.menu.categories);
+    const restaurantId = categories.length > 0 ? categories[0].restaurant_id : null;
   const { data: restaurants, isLoading } = useRestaurants();
   const { wishlistData, mutate: wishlistMutate } = useWhislists();
   const [visibleCount, setVisibleCount] = useState(6);
@@ -67,13 +70,13 @@ const AllRestaurant = ({ selectedLocation }) => {
   const backToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  const handleFavoriteToggle = (restaurantId) => {
-    if (favorites.includes(restaurantId)) {
-      setFavorites(favorites.filter((id) => id !== restaurantId));
-    } else {
-      setFavorites([...favorites, restaurantId]);
-    }
-  };
+  // const handleFavoriteToggle = (restaurantId) => {
+  //   if (favorites.includes(restaurantId)) {
+  //     setFavorites(favorites.filter((id) => id !== restaurantId));
+  //   } else {
+  //     setFavorites([...favorites, restaurantId]);
+  //   }
+  // };
 
   const filteredRestaurants = () => {
     let filtered = restaurants || [];
@@ -408,7 +411,7 @@ const AllRestaurant = ({ selectedLocation }) => {
                       <Card.Footer className="bg-white border-top-0">
                         <Row>
                           <Col xs={6}>
-                            <Link to="/menu" className="w-100">
+                              <Link to={`/menu/${restaurant.id}`} onClick={scrollToTop}>
                               <Button
                                 variant="outline-success"
                                 className="w-100 all-button text-light"
