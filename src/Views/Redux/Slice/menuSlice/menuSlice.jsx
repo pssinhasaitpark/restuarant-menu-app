@@ -20,7 +20,7 @@ export const fetchMenuByRestaurantId = createAsyncThunk(
 
 const initialState = {
   categories: [],
-  status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+  status: 'idle',
   error: null,
   selectedRestaurantId: null
 };

@@ -5,7 +5,7 @@ const WhislistLayouts = () => {
   return (
     <div><Navbarcompo/>
     <Whislist/>
-    <Footer/>
+   
     </div>
   )
 }

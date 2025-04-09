@@ -7,7 +7,7 @@ import "swiper/css/pagination";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FaPizzaSlice, FaIceCream, FaGlassWhiskey } from "react-icons/fa";
 import './DiscountSlider.css'
-const DiscountSlider = () => {
+const DiscountSlider = ({ qrCode }) => {
   const swiperRef = useRef(null);
   const [activeSlide, setActiveSlide] = useState(0);
 
@@ -43,11 +43,16 @@ const DiscountSlider = () => {
     },
   ];
 
+
+  console.log('v<><<<<', qrCode);
+
+
+
   return (
     <div className="container ">
       <div className="row">
-        <div className="col-lg-10 col-md-12">
-          <div className="position-relative discount-slider-container">
+        <div className="col-lg-10 col-md-12 mt-2 ">
+          <div className="position-relative discount-slider-container ">
             <Swiper
               ref={swiperRef}
               modules={[EffectCoverflow, Autoplay, Pagination]}
@@ -73,16 +78,16 @@ const DiscountSlider = () => {
             >
               {sliderData.map((slide, index) => (
                 <SwiperSlide key={index} className="swiper-slide" style={{ width: "100%" }}>
-                  <div 
-                    className="p-2 rounded-lg shadow-lg border-0 h-100"
-                    // style={{ 
-                    //   background: `linear-gradient(145deg, ${slide.color}22, ${slide.color}55)`,
-                    //   borderLeft: `8px solid ${slide.color}`
-                    // }}
+                  <div
+                    className="p-3 py-4 rounded-lg shadow-lg border-0 h-100"
+                  // style={{ 
+                  //   background: `linear-gradient(145deg, ${slide.color}22, ${slide.color}55)`,
+                  //   borderLeft: `8px solid ${slide.color}`
+                  // }}
                   >
                     <div className="d-flex align-items-center">
                       <div className="me-4">
-                        <div 
+                        <div
                           className="rounded-circle d-flex justify-content-center align-items-center shadow p-3"
                         //   style={{ background: `${slide.color}22`, backdropFilter: "blur(10px)" }}
                         >
@@ -94,7 +99,7 @@ const DiscountSlider = () => {
                           {slide.title}
                         </h3>
                         <p className="mb-2 text-dark fs-6">{slide.description}</p>
-                        <button 
+                        <button
                           className="btn btn-sm text-white fw-bold mt-2 btn-redeem"
                           style={{ backgroundColor: slide.color }}
                         >
@@ -106,16 +111,16 @@ const DiscountSlider = () => {
                 </SwiperSlide>
               ))}
             </Swiper>
-            
+
             <div className="custom-navigation d-flex justify-content-between position-absolute top-50 start-0 end-0 translate-middle-y z-1 px-3">
               <button
                 onClick={handlePrev}
                 className="prev-button btn rounded-circle shadow-sm d-flex align-items-center justify-content-center bg-light"
-                style={{ 
-             
+                style={{
+
                   width: "40px",
                   height: "40px",
-                  
+
                 }}
               >
                 <FaChevronLeft />
@@ -123,11 +128,11 @@ const DiscountSlider = () => {
               <button
                 onClick={handleNext}
                 className="next-button btn rounded-circle shadow-sm d-flex align-items-center justify-content-center bg-light"
-                style={{ 
-        
+                style={{
+
                   width: "40px",
                   height: "40px",
-                 
+
                 }}
               >
                 <FaChevronRight />
@@ -135,24 +140,27 @@ const DiscountSlider = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="col-lg-2 col-md-12 mt-4 mt-lg-0">
-          <div className="discount-qr p-3 bg-light rounded-lg shadow-sm border text-center h-100 d-flex flex-column justify-content-center align-items-center">
-            <div className="mb-3 p-2 rounded bg-white">
-              <svg width="100" height="100" viewBox="0 0 100 100">
-                <rect x="10" y="10" width="80" height="80" fill="#000" />
-                <rect x="20" y="20" width="60" height="60" fill="#fff" />
-                <rect x="30" y="30" width="40" height="40" fill="#000" />
-                <rect x="40" y="40" width="20" height="20" fill="#fff" />
-              </svg>
-            </div>
-            <p className="fw-bold mb-0">Scan For Menu</p>
-            <small className="text-muted">Get exclusive offers</small>
+          <div className="discount-qr bg-light rounded-lg shadow-sm border text-center d-flex flex-column justify-content-center align-items-center">
+            {qrCode && (
+              <div className="qr-code-container">
+
+                <iframe
+                  src={qrCode?.data?.qr_code_url}
+                  width="94%"
+                  height="270px"
+                />
+              </div>
+            )}
+            {/* <p className="fw-bold mb-0">Scan For Menu</p>
+            <small className="text-muted">Get exclusive offers</small> */}
           </div>
         </div>
+
       </div>
-      
-     
+
+
     </div>
   );
 };
