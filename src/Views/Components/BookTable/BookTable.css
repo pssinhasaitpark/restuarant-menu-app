@@ -1,0 +1,7 @@
+button#dropdown-basic {
+    width: 100%;
+    border:none !important;
+}
+.dropdown-menu.show {
+    width: 100%;
+}
