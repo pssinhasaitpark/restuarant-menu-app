@@ -17,7 +17,13 @@ import {
 } from "../../Redux/Slice/menuSlice/menuSlice";
 import { photo7 } from "../../../assets";
 
-const Menus = ({ restaurantId,onAddMenuItem }) => {
+const Menus = ({
+  restaurantId,
+  onAddMenuItem,
+  selectedMenuItems,
+  onRemoveMenuItem,
+  onUpdateItemQuantity
+}) => {
   const dispatch = useDispatch();
   const menu = useSelector((state) => state.menu.categories);
   const menuStatus = useSelector((state) => state.menu.status);
@@ -55,6 +61,15 @@ const Menus = ({ restaurantId,onAddMenuItem }) => {
   }, []);
 
   useEffect(() => {
+    const newQuantities = {};
+    selectedMenuItems.forEach(item => {
+      newQuantities[item.id] = item.quantity;
+    });
+    setQuantities(newQuantities);
+  }, [selectedMenuItems]);
+
+
+  useEffect(() => {
     const items = Object.entries(quantities)
       .filter(([_, quantity]) => quantity > 0)
       .map(([productId, quantity]) => {
@@ -82,18 +97,46 @@ const Menus = ({ restaurantId,onAddMenuItem }) => {
   };
 
   const updateQuantity = (productId, amount) => {
-    setQuantities((prev) => ({
+    const currentQuantity = quantities[productId] || 0;
+    const newQuantity = Math.max(currentQuantity + amount, 0);
+
+    setQuantities(prev => ({
       ...prev,
-      [productId]: Math.max((prev[productId] || 0) + amount, 0),
+      [productId]: newQuantity
     }));
+
+
+    const allProducts = menu.flatMap((category) => category.menu_items);
+    const product = allProducts.find((item) => item.id === productId);
+
+    if (product) {
+      if (newQuantity === 0) {
+ 
+        onRemoveMenuItem(productId);
+      } else if (currentQuantity === 0 && newQuantity > 0) {
+ 
+        onAddMenuItem({
+          id: productId,
+          name: product.item_name,
+          price: parseFloat(product.item_price) || 0,
+          quantity: newQuantity,
+          image: product.images[0],
+        });
+      } else {
+ 
+        onUpdateItemQuantity(productId, newQuantity);
+      }
+    }
   };
 
   const removeItem = (productId) => {
-    setQuantities((prev) => {
+    setQuantities(prev => {
       const updated = { ...prev };
       delete updated[productId];
       return updated;
     });
+
+    onRemoveMenuItem(productId);
   };
 
   const clearFilters = () => {
@@ -146,17 +189,13 @@ const Menus = ({ restaurantId,onAddMenuItem }) => {
   const getTotalCartItems = () => {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
-  const addMenuItemToCart = (product) => {
-    // Add to cart logic
-    onAddMenuItem(product);
-  };
 
-
-  const handleCheckout = () => {
-    alert(
-      `Proceeding to checkout with ${getTotalCartItems()} items worth ₹${getTotalCartAmount()}`
-    );
-  };
+  // const addAllToCart = () => {
+ 
+  //   cartItems.forEach(item => {
+  //     onAddMenuItem(item);
+  //   });
+  // };
 
   if (menuStatus === "loading") {
     return <div>Loading...</div>;
@@ -195,9 +234,8 @@ const Menus = ({ restaurantId,onAddMenuItem }) => {
               </div>
               <div className="list-group list-group-flush mb-2">
                 <button
-                  className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3 mb-2 ${
-                    !activeCategory ? "active fw-bold" : ""
-                  }`}
+                  className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3 mb-2 ${!activeCategory ? "active fw-bold" : ""
+                    }`}
                   onClick={clearFilters}
                 >
                   <span>All Items</span>
@@ -208,9 +246,8 @@ const Menus = ({ restaurantId,onAddMenuItem }) => {
                 {menu.map((category) => (
                   <button
                     key={category.id}
-                    className={`list-group-item list-group-item-action d-flex mb-2 justify-content-between align-items-center mb-2 ₹ ${
-                      activeCategory === category.id ? "active" : ""
-                    }`}
+                    className={`list-group-item list-group-item-action d-flex mb-2 justify-content-between align-items-center mb-2 ₹ ${activeCategory === category.id ? "active" : ""
+                      }`}
                     onClick={() => handleCategoryClick(category.id)}
                   >
                     {category.category_name}
@@ -412,7 +449,7 @@ const Menus = ({ restaurantId,onAddMenuItem }) => {
                       </div>
                     </div>
 
-                    
+
                     {showCart && (
                       <div className="mt-auto p-3 border-top border-3 border-success">
                         <div className="shadow-sm rounded-3 p-3    bg-white">
@@ -467,18 +504,11 @@ const Menus = ({ restaurantId,onAddMenuItem }) => {
                                   )}
                                 </div>
                               </div>
-                              <div className="col-md-2 mt-1">
-                                <button
-                                  className="btn btn-success w-100 all-button"
-                                  onClick={() => addMenuItemToCart(product)}
-                                >
-                                  Add <FaShoppingCart className="ms-2" />
-                                </button>
-                              </div>
+                           
                             </div>
                           </div>
 
-                       
+
                           <div className="d-flex justify-content-end mt-3">
                             <div
                               className="  "
@@ -486,7 +516,7 @@ const Menus = ({ restaurantId,onAddMenuItem }) => {
                                 setShowCartDetails(!showCartDetails)
                               }
                             >
-                              {showCartDetails ? "Hide" : "View"} 
+                              {showCartDetails ? "Hide" : "View"}
                               {showCartDetails ? (
                                 <FaArrowUp className="ms-2" size={12} />
                               ) : (
@@ -499,7 +529,7 @@ const Menus = ({ restaurantId,onAddMenuItem }) => {
                             </div>
                           </div>
 
-                    
+
                           {showCartDetails && (
                             <div className="mt-3">
                               <div className="table-responsive">

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { LandingPage,MenusLayout,AllResturantLayout,WhislistLayouts,YourOrderLayout,YourProfileLayout,YourActivityLayout } from './Views/Layouts/index';
+import { LandingPage,MenusLayout,AllResturantLayout,WhislistLayouts,YourOrderLayout,YourProfileLayout,YourActivityLayout,QrMenuLayout } from './Views/Layouts/index';
 import './App.css';
 
 function App() {
@@ -15,6 +15,7 @@ function App() {
           <Route path="order" element={<YourOrderLayout />} />
           <Route path="profile" element={<YourProfileLayout />} />
           <Route path="activity" element={<YourActivityLayout />} />
+          <Route path="qrmenu" element={<QrMenuLayout />} />
         </Routes>
       </div>
     </Router>

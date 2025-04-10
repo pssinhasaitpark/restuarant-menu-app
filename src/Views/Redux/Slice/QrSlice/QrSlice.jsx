@@ -5,7 +5,7 @@ export const fetchQRCode = createAsyncThunk(
   'qr/fetchQRCode',
   async (restaurantId, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`${import.meta.env.VITE_APP_BASE_URL}/menu_management/qr_code`, {
+      const response = await axiosInstance.get(`${import.meta.env.VITE_APP_BASE_URL}/menuManagement/qrCode`, {
         params: { id: restaurantId },
       });
       return response.data;

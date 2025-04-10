@@ -4,4 +4,5 @@ import Whislist from "./Whislist/Whislist";
 import YourOrder from "./YourOrder/YourOrder";
 import YourProfile from "./YourProfile/YourProfile";
 import YourActivity from "./YourActivity/YourActivity";
-export{Menus,AllResturant,Whislist,YourOrder,YourProfile,YourActivity}
+import QrMenu from "./QrMenu/QrMenu";
+export{Menus,AllResturant,Whislist,YourOrder,YourProfile,YourActivity,QrMenu}

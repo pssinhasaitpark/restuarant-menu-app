@@ -6,7 +6,7 @@ export const fetchMenuByRestaurantId = createAsyncThunk(
   async (restaurantId, { rejectWithValue }) => {
     try {
       console.log("Fetching menu for Restaurant ID:", restaurantId);
-      const response = await axiosInstance.get(`${import.meta.env.VITE_APP_BASE_URL}/menu_management`, {
+      const response = await axiosInstance.get(`${import.meta.env.VITE_APP_BASE_URL}/menuManagement`, {
         params: { id: restaurantId }
       });
       console.log("Menu Response:", response.data);

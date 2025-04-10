@@ -17,14 +17,15 @@ import { IoPeopleSharp, IoTimeSharp } from "react-icons/io5";
 import "./BookTable.css";
 import { useDispatch, useSelector } from "react-redux";
 import './BookTable.css'
-import { fetchAvailableTables } from '../../Redux/Slice/BookTableSlice/BookTableSlice';
+import { fetchAvailableTables,bookTable } from '../../Redux/Slice/BookTableSlice/BookTableSlice';
 const phoneRegExp = /^(\+?\d{0-9})?\s?-?\s?(\(?\d{7}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/;
 
 
-const BookTable = ({ restaurantId }) => {
+const BookTable = ({ restaurantId, selectedMenuItems }) => {
   const [selectedTables, setSelectedTables] = useState([]);
   const dispatch = useDispatch();
-  const { availableTables, loading, error } = useSelector((state) => state.tables);
+  const { availableTables, loading, error,bookingSuccess, bookingError} = useSelector((state) => state.tables);
+
 
   useEffect(() => {
     if (restaurantId) {
@@ -63,14 +64,18 @@ const BookTable = ({ restaurantId }) => {
         booking_time: values.time,
         date: values.date,
         instruction: values.specialRequests || "",
-        selected_tables: selectedTables,
+        table_number: selectedTables,
+        menu_items: selectedMenuItems.map(item => item.id), 
       };
 
 
-      formik.resetForm();
-      setSelectedTables([]);
-    },
-  });
+  
+      dispatch(bookTable({ bookingData, restaurantId }));
+    formik.resetForm();
+    setSelectedTables([]);
+  },
+});
+  
   const handleTableSelect = (tableNumber) => {
     if (selectedTables.includes(tableNumber)) {
       setSelectedTables(selectedTables.filter((table) => table !== tableNumber));
@@ -91,6 +96,8 @@ const BookTable = ({ restaurantId }) => {
               </p>
             </Card.Header>
             <Card.Body className="p-4">
+                  {bookingSuccess && <p className="text-success">Booking confirmed!</p>}
+              {bookingError && <p className="text-danger">{bookingError}</p>}
               <Form onSubmit={formik.handleSubmit}>
                 <Row className="mb-3">
                   <Col md={6}>
@@ -214,7 +221,7 @@ const BookTable = ({ restaurantId }) => {
                       </InputGroup>
                     </Form.Group>
                   </Col>
-                  <Col md={6}>
+                  <Col md={5}>
                     <Form.Group className="">
                       <Form.Label className="fw-bold">Booking Table No.s</Form.Label>
                       <Dropdown>
@@ -255,15 +262,25 @@ const BookTable = ({ restaurantId }) => {
                       </div>
                     )}
                   </Col>
-                  <Col md={6}>
+                  <Col md={7}>
                     <Form.Group className="">
                       <Form.Label className="fw-bold">Selected Menu Items</Form.Label>
                       <Form.Control
                         as="textarea"
                         rows={3}
-                        placeholder="Selected Menu Items for Dining..."
+                        readOnly
+                        value={
+                          selectedMenuItems.length > 0
+                            ? selectedMenuItems.map((item) => {
+                              console.log("Item ID:", item.id); 
+                              const totalPrice = item.price * item.quantity;
+                              return `${item.name} - ₹${item.price} x ${item.quantity} = Total: ₹${totalPrice}`;
+                            }).join("\n")
+                            : "No items selected"
+                        }
                       />
                     </Form.Group>
+
                   </Col>
                 </Row>
                 <Form.Group className="mb-4">
