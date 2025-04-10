@@ -5,4 +5,5 @@ import WhislistLayouts from "./WhislistLayouts/WhislistLayouts";
 import YourOrderLayout from "./YourOrderLayout/YourOrderLayout";
 import YourProfileLayout from "./YourProfileLayout/YourProfileLayout";
 import YourActivityLayout from "./YourActivityLayout/YourActivityLayout";
-export {LandingPage,MenusLayout,AllResturantLayout,WhislistLayouts,YourOrderLayout,YourProfileLayout,YourActivityLayout}
+import QrMenuLayout from "./QrMenuLayout/QrMenuLayout";
+export {LandingPage,MenusLayout,AllResturantLayout,WhislistLayouts,YourOrderLayout,YourProfileLayout,YourActivityLayout,QrMenuLayout}

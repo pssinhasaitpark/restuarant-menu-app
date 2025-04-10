@@ -21,6 +21,12 @@
 .contFrm textarea {
   height: 75px;
   padding-top: 5px;}
+  .error {
+    color: rgb(192, 15, 15);
+    font-size: 0.875em;
+    margin-top: 0.2em;
+  }
+  
 @media (max-width: 991px) {
   .sec-pad {padding: 20px 0 0px; }
   .contact-sec .contact-ul li,
