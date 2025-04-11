@@ -95,39 +95,66 @@ const Menus = ({
   const backToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
   const updateQuantity = (productId, amount) => {
     const currentQuantity = quantities[productId] || 0;
     const newQuantity = Math.max(currentQuantity + amount, 0);
-
+  
     setQuantities(prev => ({
       ...prev,
       [productId]: newQuantity
     }));
-
-
+  
     const allProducts = menu.flatMap((category) => category.menu_items);
     const product = allProducts.find((item) => item.id === productId);
-
+  
     if (product) {
       if (newQuantity === 0) {
- 
         onRemoveMenuItem(productId);
       } else if (currentQuantity === 0 && newQuantity > 0) {
- 
         onAddMenuItem({
           id: productId,
           name: product.item_name,
           price: parseFloat(product.item_price) || 0,
-          quantity: newQuantity,
+          quantity: newQuantity, // Ensure quantity is set correctly
           image: product.images[0],
         });
       } else {
- 
         onUpdateItemQuantity(productId, newQuantity);
       }
     }
   };
+  // const updateQuantity = (productId, amount) => {
+  //   const currentQuantity = quantities[productId] || 0;
+  //   const newQuantity = Math.max(currentQuantity + amount, 0);
+
+  //   setQuantities(prev => ({
+  //     ...prev,
+  //     [productId]: newQuantity
+  //   }));
+
+
+  //   const allProducts = menu.flatMap((category) => category.menu_items);
+  //   const product = allProducts.find((item) => item.id === productId);
+
+  //   if (product) {
+  //     if (newQuantity === 0) {
+ 
+  //       onRemoveMenuItem(productId);
+  //     } else if (currentQuantity === 0 && newQuantity > 0) {
+ 
+  //       onAddMenuItem({
+  //         id: productId,
+  //         name: product.item_name,
+  //         price: parseFloat(product.item_price) || 0,
+  //         quantity: newQuantity,
+  //         image: product.images[0],
+  //       });
+  //     } else {
+ 
+  //       onUpdateItemQuantity(productId, newQuantity);
+  //     }
+  //   }
+  // };
 
   const removeItem = (productId) => {
     setQuantities(prev => {
