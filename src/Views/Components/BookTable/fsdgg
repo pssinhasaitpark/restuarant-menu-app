@@ -7,10 +7,11 @@ import {
   Row,
   Col,
   InputGroup,
-} from "react-bootstrap";
-import { Modal, Button as BootstrapButton } from "react-bootstrap";
 
-import axios from "axios";
+} from "react-bootstrap";
+import { Modal, Button as BootstrapButton } from 'react-bootstrap';
+
+import axios from 'axios';
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { FaUser, FaMobile, FaCalendar } from "react-icons/fa";
@@ -26,12 +27,8 @@ import {
 const phoneRegExp =
   /^(\+?\d{0-9})?\s?-?\s?(\(?\d{7}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/;
 
-const generateTimeOptions = (
-  openingTime,
-  closingTime,
-  selectedDate,
-  interval = 15
-) => {
+
+const generateTimeOptions = (openingTime, closingTime, interval = 15) => {
   const formatTime = (date) => {
     const hours = date.getHours();
     const minutes = date.getMinutes();
@@ -41,42 +38,31 @@ const generateTimeOptions = (
     return `${formattedHours}:${formattedMinutes} ${ampm}`;
   };
 
-  const parseTime = (timeStr, baseDate) => {
-    const [hour, minute, period] = timeStr
-      .match(/(\d+):(\d+)\s*(AM|PM)/i)
-      .slice(1);
-    const date = new Date(baseDate);
-    let hrs = parseInt(hour);
-    if (period.toUpperCase() === "PM" && hrs !== 12) hrs += 12;
-    if (period.toUpperCase() === "AM" && hrs === 12) hrs = 0;
-    date.setHours(hrs, parseInt(minute), 0, 0);
+  const timeOptions = [];
+
+  const parseTime = (timeStr) => {
+    const [hour, minute, period] = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i).slice(1);
+    const date = new Date();
+    date.setHours(
+      (parseInt(hour) % 12) + (period.toUpperCase() === "PM" ? 12 : 0),
+      parseInt(minute),
+      0,
+      0
+    );
     return date;
   };
 
-  const selected = new Date(selectedDate);
-  const now = new Date();
-  const isToday = selected.toDateString() === now.toDateString();
-
-  const startDate = parseTime(openingTime, selected);
-  const endDate = parseTime(closingTime, selected);
-  let baseTime = startDate;
-
-  if (isToday) {
-    baseTime = new Date();
-    if (baseTime < startDate) baseTime = startDate;
-  }
-
-  // Round up to next interval
+  const currentTime = new Date();
+  const startDate = parseTime(openingTime);
+  const endDate = parseTime(closingTime);
+  const baseTime = currentTime > startDate ? currentTime : startDate;
   const roundedStart = new Date(baseTime);
   const minutes = roundedStart.getMinutes();
   const remainder = interval - (minutes % interval);
-  if (remainder !== interval) {
-    roundedStart.setMinutes(minutes + remainder);
-  }
+  roundedStart.setMinutes(minutes + remainder);
   roundedStart.setSeconds(0);
   roundedStart.setMilliseconds(0);
 
-  const timeOptions = [];
   while (roundedStart <= endDate) {
     timeOptions.push(formatTime(new Date(roundedStart)));
     roundedStart.setMinutes(roundedStart.getMinutes() + interval);
@@ -84,6 +70,7 @@ const generateTimeOptions = (
 
   return timeOptions;
 };
+
 
 const BookTable = ({
   restaurantId,
@@ -94,14 +81,14 @@ const BookTable = ({
 }) => {
   const navigate = useNavigate();
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
     script.async = true;
     script.onload = () => {
-      console.log("Razorpay script loaded successfully");
+      console.log('Razorpay script loaded successfully');
     };
     script.onerror = () => {
-      console.error("Error loading Razorpay script");
+      console.error('Error loading Razorpay script');
     };
     document.body.appendChild(script);
     return () => {
@@ -112,10 +99,16 @@ const BookTable = ({
   const [selectedTables, setSelectedTables] = useState([]);
 
   const dispatch = useDispatch();
-  const { availableTables, loading, error, bookingError } = useSelector(
-    (state) => state.tables
-  );
-  const [timeOptions, setTimeOptions] = useState([]);
+  const { availableTables, loading, error, bookingError } =
+    useSelector((state) => state.tables);
+
+
+  const timeOptions =
+    openingTime && closingTime
+      ? generateTimeOptions(openingTime, closingTime, 15)
+      : [];
+
+
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -134,7 +127,7 @@ const BookTable = ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(true)
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -179,21 +172,17 @@ const BookTable = ({
 
       const response = await dispatch(bookTable({ bookingData, restaurantId }));
 
-      if (response.meta.requestStatus === "fulfilled") {
+      if (response.meta.requestStatus === 'fulfilled') {
         const { razorpay_order_id, total_charge } = response.payload.data;
         const options = {
-          key: "rzp_test_o55kuxiGDRZxSG",
+          key: 'rzp_test_o55kuxiGDRZxSG',
           amount: total_charge * 100,
-          currency: "INR",
-          name: "Booking Table",
-          description: "Test Transaction",
+          currency: 'INR',
+          name: 'Booking Table',
+          description: 'Test Transaction',
           order_id: razorpay_order_id,
           handler: async function (response) {
-            const {
-              razorpay_order_id,
-              razorpay_payment_id,
-              razorpay_signature,
-            } = response;
+            const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = response;
 
             try {
               const verificationResponse = await axios.post(
@@ -202,21 +191,19 @@ const BookTable = ({
               );
 
               if (verificationResponse.data.status) {
-                console.log("Payment verified successfully!");
+                console.log('Payment verified successfully!');
                 formik.resetForm();
+
 
                 setSelectedTables([]);
                 setSelectedMenuItems();
 
                 navigate("/");
               } else {
-                console.error(
-                  "Payment verification failed:",
-                  verificationResponse.data
-                );
+                console.error('Payment verification failed:', verificationResponse.data);
               }
             } catch (error) {
-              console.error("Error verifying payment:", error);
+              console.error('Error verifying payment:', error);
             }
           },
           prefill: {
@@ -225,33 +212,21 @@ const BookTable = ({
             contact_no: values.contact_no,
           },
           theme: {
-            color: "#3399cc",
+            color: '#3399cc',
           },
         };
 
         const razorpay = new window.Razorpay(options);
         razorpay.open();
-        razorpay.on("payment.failed", (paymentError) => {
-          console.error("Payment Failed:", paymentError);
+        razorpay.on('payment.failed', (paymentError) => {
+          console.error('Payment Failed:', paymentError);
         });
       } else {
-        console.error("Booking failed:", response.payload);
+        console.error('Booking failed:', response.payload);
       }
     },
   });
-  useEffect(() => {
-    if (formik.values.date && openingTime && closingTime) {
-      const options = generateTimeOptions(
-        openingTime,
-        closingTime,
-        formik.values.date
-      );
-      setTimeOptions(options);
-      if (!options.includes(formik.values.time)) {
-        formik.setFieldValue("time", "");
-      }
-    }
-  }, [formik.values.date, openingTime, closingTime]);
+
   const handleTableSelect = (tableNumber) => {
     if (selectedTables.includes(tableNumber)) {
       setSelectedTables(
@@ -487,12 +462,12 @@ const BookTable = ({
                         value={
                           selectedMenuItems.length > 0
                             ? selectedMenuItems
-                                .map((item) => {
-                                  console.log("Item ID:", item.id);
-                                  const totalPrice = item.price * item.quantity;
-                                  return `${item.name} - ₹${item.price} x ${item.quantity} = Total: ₹${totalPrice}`;
-                                })
-                                .join("\n")
+                              .map((item) => {
+                                console.log("Item ID:", item.id);
+                                const totalPrice = item.price * item.quantity;
+                                return `${item.name} - ₹${item.price} x ${item.quantity} = Total: ₹${totalPrice}`;
+                              })
+                              .join("\n")
                             : "No items selected"
                         }
                       />
@@ -522,32 +497,21 @@ const BookTable = ({
                   </Button>
                 </div>
               </Form>
-              <Modal
-                show={showLoginModal}
-                onHide={() => setShowLoginModal(false)}
-                centered
-              >
+              <Modal show={showLoginModal} onHide={() => setShowLoginModal(false)} centered>
                 <Modal.Header closeButton>
                   <Modal.Title>Login Required</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
-                  You need to login first to confirm your reservation.
-                </Modal.Body>
+                <Modal.Body>You need to login first to confirm your reservation.</Modal.Body>
                 <Modal.Footer>
-                  <BootstrapButton
-                    variant="secondary"
-                    onClick={() => setShowLoginModal(false)}
-                  >
+                  <BootstrapButton variant="secondary" onClick={() => setShowLoginModal(false)}>
                     Close
                   </BootstrapButton>
-                  <BootstrapButton
-                    variant="primary"
-                    onClick={() => navigate("/login")}
-                  >
+                  <BootstrapButton variant="primary" onClick={() => navigate('/login')}>
                     Login
                   </BootstrapButton>
                 </Modal.Footer>
               </Modal>
+
             </Card.Body>
           </Card>
         </Col>
@@ -557,3 +521,47 @@ const BookTable = ({
 };
 
 export default BookTable;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

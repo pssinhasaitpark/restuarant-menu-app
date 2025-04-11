@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Badge, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Badge, Button, Form } from 'react-bootstrap';
 import { photo7, photo8 } from "../../../assets/index";
 import { FaStar, FaRegStar, FaUtensils, FaCalendarAlt, FaClock, FaMapMarkerAlt, FaCommentAlt, FaHistory } from 'react-icons/fa';
 import { FaArrowUp } from "react-icons/fa6";
+
 const YourActivity = () => {
   const [showButton, setShowButton] = useState(false);
+  const [editingReviewId, setEditingReviewId] = useState(null);
+  const [newReviewRestaurant, setNewReviewRestaurant] = useState(null);
+  const [reviewText, setReviewText] = useState('');
+  const [selectedRating, setSelectedRating] = useState(5);
+  const [ratingText, setRatingText] = useState('Excellent');
+
   const recentReviews = [
     {
       id: 1,
@@ -59,6 +66,19 @@ const YourActivity = () => {
       status: "completed"
     }
   ];
+
+  // Set up review text when editing an existing review
+  useEffect(() => {
+    if (editingReviewId !== null) {
+      const review = recentReviews.find(r => r.id === editingReviewId);
+      if (review) {
+        setReviewText(review.comment);
+        setSelectedRating(review.rating);
+        updateRatingText(review.rating);
+      }
+    }
+  }, [editingReviewId]);
+
   // button
   useEffect(() => {
     const handleScroll = () => {
@@ -99,6 +119,61 @@ const YourActivity = () => {
     }
 
     return stars;
+  };
+
+  const renderSelectableStars = () => {
+    return [1, 2, 3, 4, 5].map(star => (
+      <span 
+        key={star} 
+        className="fs-4 cursor-pointer" 
+        style={{ cursor: 'pointer' }}
+        onClick={() => handleRatingClick(star)}
+      >
+        {star <= selectedRating ? 
+          <FaStar className="text-warning" /> : 
+          <FaRegStar className="text-warning" />
+        }
+      </span>
+    ));
+  };
+
+  const handleRatingClick = (rating) => {
+    setSelectedRating(rating);
+    updateRatingText(rating);
+  };
+
+  const updateRatingText = (rating) => {
+    if (rating <= 1) setRatingText('Poor');
+    else if (rating <= 2) setRatingText('Fair');
+    else if (rating <= 3) setRatingText('Good');
+    else if (rating <= 4) setRatingText('Very Good');
+    else setRatingText('Excellent');
+  };
+
+  const handleEditReview = (reviewId) => {
+    setEditingReviewId(reviewId);
+    setNewReviewRestaurant(null);
+  };
+
+  const handleLeaveReview = (restaurantName) => {
+    setNewReviewRestaurant(restaurantName);
+    setEditingReviewId(null);
+    setReviewText('');
+    setSelectedRating(5);
+    updateRatingText(5);
+  };
+
+  const handleSubmitReview = () => {
+    // Here you would typically save the review to your database
+    // For now, we'll just close the form
+    setEditingReviewId(null);
+    setNewReviewRestaurant(null);
+    alert("Review submitted successfully!");
+  };
+
+  const handleCancelReview = () => {
+    setEditingReviewId(null);
+    setNewReviewRestaurant(null);
   };
 
   return (
@@ -251,8 +326,56 @@ const YourActivity = () => {
                       <Button variant="outline-success" size="sm" className="me-2 d-flex align-items-center">
                         <FaStar className="me-1" /> {review.likes}
                       </Button>
-                      <Button variant="outline-success" size="sm">Edit Review</Button>
+                      <Button 
+                        variant="outline-success" 
+                        size="sm"
+                        onClick={() => handleEditReview(review.id)}
+                      >
+                        Edit Review
+                      </Button>
                     </div>
+                    
+                    {editingReviewId === review.id && (
+                      <Card className="mt-3 border-0 shadow-sm bg-light">
+                        <Card.Body>
+                          <h6 className="mb-3">Edit Your Review</h6>
+                          <div className="mb-3">
+                            <div className="d-flex align-items-center mb-2">
+                              <div className="me-3">
+                                {renderSelectableStars()}
+                              </div>
+                              <span className="text-success fw-bold">{ratingText}</span>
+                            </div>
+                            <Form.Group>
+                              <Form.Control 
+                                as="textarea" 
+                                rows={3} 
+                                placeholder="Share your experience about this restaurant..."
+                                value={reviewText}
+                                onChange={(e) => setReviewText(e.target.value)}
+                              />
+                            </Form.Group>
+                          </div>
+                          <div className="d-flex justify-content-end">
+                            <Button 
+                              variant="outline-secondary" 
+                              size="sm" 
+                              className="me-2"
+                              onClick={handleCancelReview}
+                            >
+                              Cancel
+                            </Button>
+                            <Button 
+                              variant="success" 
+                              size="sm"
+                              onClick={handleSubmitReview}
+                            >
+                              Update Review
+                            </Button>
+                          </div>
+                        </Card.Body>
+                      </Card>
+                    )}
                   </Col>
                 </Row>
               </Card.Body>
@@ -290,15 +413,62 @@ const YourActivity = () => {
                       <span className="text-dark small d-flex align-items-center">
                         <FaUtensils className="me-1" size={12} /> {booking.guests} guests
                       </span>
-                      {!recentReviews.some(review => review.restaurantName === booking.restaurantName) && (
-                        <Button variant="outline-success" size="sm">Leave Review</Button>
-                      )}
-                      {recentReviews.some(review => review.restaurantName === booking.restaurantName) && (
+                      {!recentReviews.some(review => review.restaurantName === booking.restaurantName) ? (
+                        <Button 
+                          variant="outline-success" 
+                          size="sm"
+                          onClick={() => handleLeaveReview(booking.restaurantName)}
+                        >
+                          Leave Review
+                        </Button>
+                      ) : (
                         <Badge bg="light" text="success" className="px-2 py-1">
                           Reviewed
                         </Badge>
                       )}
                     </div>
+                    
+                    {newReviewRestaurant === booking.restaurantName && (
+                      <Card className="mt-3 border-0 shadow-sm bg-light">
+                        <Card.Body>
+                          <h6 className="mb-3">Leave a Review for {booking.restaurantName}</h6>
+                          <div className="mb-3">
+                            <div className="d-flex align-items-center mb-2">
+                              <div className="me-3">
+                                {renderSelectableStars()}
+                              </div>
+                              <span className="text-success fw-bold">{ratingText}</span>
+                            </div>
+                            <Form.Group>
+                              <Form.Control 
+                                as="textarea" 
+                                rows={3} 
+                                placeholder="Share your experience about this restaurant..."
+                                value={reviewText}
+                                onChange={(e) => setReviewText(e.target.value)}
+                              />
+                            </Form.Group>
+                          </div>
+                          <div className="d-flex justify-content-end">
+                            <Button 
+                              variant="outline-secondary" 
+                              size="sm" 
+                              className="me-2"
+                              onClick={handleCancelReview}
+                            >
+                              Cancel
+                            </Button>
+                            <Button 
+                              variant="success" 
+                              size="sm"
+                              onClick={handleSubmitReview}
+                            >
+                              Submit Review
+                            </Button>
+                          </div>
+                        </Card.Body>
+                      </Card>
+                    )}
                   </Card.Body>
                 </Card>
               </Col>
@@ -310,4 +480,4 @@ const YourActivity = () => {
   );
 };
 
-export default YourActivity;
+export default YourActivity;0
